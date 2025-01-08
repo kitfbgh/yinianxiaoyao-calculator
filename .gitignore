@@ -28,3 +28,9 @@ Homestead.json
 .env.production
 .phpactor.json
 auth.json
+
+*_accessKeys.csv
+
+**/caddy
+frankenphp
+frankenphp-worker.php

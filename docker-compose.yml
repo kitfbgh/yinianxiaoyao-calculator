@@ -1,0 +1,36 @@
+services:
+  calculator:
+    build:
+      context: ./
+      target: local
+      dockerfile: Dockerfile
+      args:
+        - GITHUB_TOKEN
+    image: calculator-dev
+    environment:
+      APP_KEY: base64:BFJ7PlqrwurM/B4oVFyozByd3/4VIn3IbGU2NDTvqo8=
+      XDEBUG_MODE: ${XDEBUG_MODE:-off}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - 8080:8080 # HTTP
+      - 443:443 # HTTPS
+    volumes:
+      - ./:/var/www/html:delegated
+      - /var/www/html/node_modules
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -e
+        php artisan optimize:clear
+        php artisan --host=0.0.0.0 --port=8080 octane:frankenphp --watch --poll --workers=4
+    # comment the following line in production, it allows to have nice human-readable logs in dev
+    tty: true
+
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.210.0.0/16
